@@ -1,0 +1,99 @@
+micro-conf.h
+============
+
+Header-only library to parse config files, in C99.
+
+Author:  Giovanni Santini
+Mail:    giovanni.santini@proton.me
+Github:  @San7o
+
+
+Example
+-------
+
+   // Example of a struct holding some values
+   typedef struct {
+     int x;
+     int y;
+   } Vec2;
+
+   int main(void)
+   {
+     Vec2 vec = (Vec2) {
+       .x = 1,
+       .y = 1,
+     };
+
+     // Define which variables should be parsed in the config file
+     // and their symbols
+     MicroConf config[] =
+       {
+       // type             variable      symbol
+         {MICRO_CONF_INT,   &vec.x,     "vec.x"},
+         {MICRO_CONF_INT,   &vec.y,     "vec.y"},
+       };
+     size_t num_conf = sizeof(config) / sizeof(config[0]);
+
+     // Parse the file
+     int err = micro_conf_parse(config, num_conf, "micro.conf");
+     if (err < 0) return -err;
+   
+     return 0;
+   }
+
+
+Usage
+-----
+
+Do this:
+
+  #define MICRO_CONF_IMPLEMENTATION
+
+before you include this file in *one* C or C++ file to create the
+implementation.
+
+i.e. it should look like this:
+
+  #include ...
+  #include ...
+  #include ...
+  #define MICRO_CONF_IMPLEMENTATION
+  #include "micro-conf.h"
+
+This library lets you define which variable to parse from a config
+file. You do so by creating an array of MicroConf, for example:
+
+   MicroConf config[] =
+     {
+       {MICRO_CONF_INT, &x, "x"},
+     };
+
+Here, &x is a pointer to a variable that will be set according to
+the value present in the configuration file, if present, and "x" is
+the key of this value.
+
+The configuration file is a list of key-value pairs separated by
+either a `=` or `:`
+
+   x:  10
+   x = 10
+
+The number of spaces is irrelevant. You can parse a config file
+with `micro_conf_parse`, for example:
+
+   micro_conf_parse(config, num_conf, "micro.conf");
+   if (err != MICRO_CONF_OK) return -err;
+
+
+Code
+----
+
+The official git repository of micro-conf.h is hosted at:
+
+    https://github.com/San7o/micro-conf.h
+
+This is part of a bigger collection of header-only C99 libraries
+called "micro-headers", contributions are welcome:
+
+    https://github.com/San7o/micro-headers
+
